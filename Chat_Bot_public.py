@@ -17,12 +17,12 @@ inuse = False
 async def on_ready():
     global bg
     print(f"目前登入身份 --> {bot.user}")
-    for guild in bot.guilds:  # 遍歷所有伺服器
-        for channel in guild.text_channels:  # 找每個伺服器的文字頻道
-            if channel.permissions_for(guild.me).send_messages:  # 檢查發話權限
+    for guild in bot.guilds:
+        for channel in guild.text_channels:
+            if channel.permissions_for(guild.me).send_messages:
                 await channel.send("啟動成功")
                 await channel.send("輸入 /Help 取得幫助，H要大寫，很重要")
-                break  # 發送一次訊息就跳出
+                break 
 
 def load_bg(filename):
     try:
@@ -150,7 +150,7 @@ async def setbg(ctx, dataname = 'bg'):
     global bg
     id = ctx.author.id
     try:
-        if not os.path.exists(f'ChatBot/background/{dataname}.txt'):  # 確保檔案存在
+        if not os.path.exists(f'ChatBot/background/{dataname}.txt'):
             await ctx.send(f"檔案 {dataname} (.txt) 不存在，無法讀取")
             return
         bg[id] = load_bg(f'Chatbot/background/{dataname}.txt')
@@ -182,10 +182,9 @@ async def retry(ctx):
                     chat_history[id] = chat_history[id][-30:]
                 start = time.time()
 
-                    # 準備對話內容（包含背景 + 對話歷史）
-                messages = [{"role": "system", "content": bg[id]}]  # 加入背景設定
-                messages.extend(chat_history[id])  # 加入過去對話
-                messages.append({"role": "user", "content": user_msg[id]})  # 使用者當前輸入
+                messages = [{"role": "system", "content": bg[id]}]
+                messages.extend(chat_history[id]) 
+                messages.append({"role": "user", "content": user_msg[id]})
 
                 try:
                     response = await asyncio.wait_for(
@@ -209,14 +208,11 @@ async def retry(ctx):
                     finish = time.time()
                     lasting = int(finish - start)
                     await msg.edit(content = f"{reply} \n(消耗時間 : {lasting} 秒)")
-
-                    # 寫入記憶
                     
                     chat_history[id].append({"role": "user", "content": user_msg[id]})
                     chat_history[id].append({"role": "assistant", "content": reply})
 
                 except asyncio.TimeoutError:
-                    # 超過 40 秒無回應，跳過
                     await ctx.send(" AI 回應超時！請再試一次或稍後再試。")
                     print(" AI 回應超時！")
                 except Exception as e:
@@ -332,7 +328,7 @@ async def upload(ctx, *args):
                 async with session.get(attachment.url) as resp:
                     if resp.status == 200:
                         with open(file_path, "wb") as f:
-                            f.write(await resp.read())  # 下載並存檔
+                            f.write(await resp.read()) 
                         await ctx.send(f"上傳成功 ! 檔案 : {attachment.filename}")
                         return
                     else:
@@ -358,12 +354,12 @@ async def upload(ctx, *args):
 async def delete(ctx, dataname='save'):
     id = ctx.author.id
     path = f'ChatBot/savefile/{id}/{dataname}.txt'
-    if not os.path.exists(path):  # 確保檔案存在
+    if not os.path.exists(path): 
         await ctx.send(f"檔案 {dataname} (.txt) 不存在，無法刪除！")
         return
 
     try:
-        os.remove(path)  # 刪除檔案
+        os.remove(path) 
         await ctx.send(f"{dataname} (.txt) 已成功刪除！")
     except Exception as e:
         await ctx.send(f"刪除失敗！錯誤: {e}")
@@ -374,7 +370,7 @@ ai_lock = asyncio.Lock()
 async def on_message(message):
     global bg, chat_history, inuse, user_msg, temperature, max_token
     if message.author == bot.user:
-        return  # 避免機器人回應自己
+        return 
    
     await bot.process_commands(message)
     
@@ -400,13 +396,11 @@ async def on_message(message):
             start = time.time()
             user_msg[id] = message.content
 
-                # 準備對話內容（包含背景 + 對話歷史）
-            messages = [{"role": "system", "content": bg[id]}]  # 加入背景設定
-            messages.extend(chat_history[id])  # 加入過去對話
-            messages.append({"role": "user", "content": user_msg[id]})  # 使用者當前輸入
+            messages = [{"role": "system", "content": bg[id]}] 
+            messages.extend(chat_history[id]) 
+            messages.append({"role": "user", "content": user_msg[id]})
 
             try:
-                # 設定 AI 超時機制，最多等待 40 秒
                 response = await asyncio.wait_for(
                     asyncio.to_thread(ollama.chat,
                                        model="mistral",
@@ -429,12 +423,10 @@ async def on_message(message):
                 finish = time.time()
                 lasting = int(finish - start)
                 await msg.edit(content = f"{reply} \n(消耗時間 : {lasting} 秒)")
-                # 寫入記憶
                 chat_history[id].append({"role": "user", "content": user_msg[id]})
                 chat_history[id].append({"role": "assistant", "content": reply})
 
             except asyncio.TimeoutError:
-                # 超過 40 秒無回應，跳過
                 await message.channel.send(" AI 回應超時！請再試一次或稍後再試。")
                 print(" AI 回應超時！")
             except Exception as e:
