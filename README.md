@@ -1,0 +1,1 @@
+這是一個高中生寫的DiscordBot
