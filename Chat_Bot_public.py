@@ -8,7 +8,6 @@ import os
 import aiohttp
 from discord.ext import commands
 
-# 設定 Discord Bot
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 inuse = False
@@ -189,7 +188,7 @@ async def retry(ctx):
                 try:
                     response = await asyncio.wait_for(
                     asyncio.to_thread(ollama.chat,
-                                       model="mistral",
+                                       model="TAIDE-8B",
                                         messages=messages,
                                         options = {'temperature' : temperature[id], 'max_tokens' : max_token[id]},
                                         stream = True
@@ -403,7 +402,7 @@ async def on_message(message):
             try:
                 response = await asyncio.wait_for(
                     asyncio.to_thread(ollama.chat,
-                                       model="mistral",
+                                       model="TAIDE-8B",
                                         messages=messages,
                                         options = {'temperature' : temperature[id], 'max_tokens' : max_token[id]},
                                         stream = True
@@ -434,4 +433,4 @@ async def on_message(message):
     else:
         return
 
-bot.run("TOKEN")
+bot.run("DCBot TOKEN")
