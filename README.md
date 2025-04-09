@@ -1,6 +1,10 @@
+# Python_DCbot
+
+這是一些我在自主學習計畫中寫的Discord機器人
+
 檔案介紹 : 
 
-Chat_bot_public.py --> 聊天機器人程式本體 (需要ollama環境才能運行，"public"版本代表隱私資訊(如bot token)已被抹去)
+Chat_bot_public.py --> 聊天機器人程式本體 (需要ollama環境才能運行，且需要TAIDE模型，"public"版本代表隱私資訊(如bot token)已被抹去)
 
 Osu_bot_public.py --> Osu爬蟲機器人的public版本
 
